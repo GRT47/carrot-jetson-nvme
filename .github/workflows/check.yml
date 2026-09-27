@@ -19,6 +19,7 @@ jobs:
           python -m pytest --confcutdir=tools/jetlink
           tools/jetlink/test_hud_media.py tools/jetlink/test_update_host.py
           tools/jetlink/test_host_health.py tools/jetlink/test_hud.py -q
+          tools/jetlink/test_wifi.py tools/jetlink/test_refresh_sd_image.py
       - run: mkdir -p dist && python tools/jetlink/build_host_bundle.py dist/precompiled-runtime.tar.gz
       - uses: actions/upload-artifact@v4
         with:
