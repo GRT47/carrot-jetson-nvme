@@ -10,6 +10,11 @@ NVIDIA 기본 OS 위에 설치하는 애플리케이션 소스이며, OS 이미�
 
 최초 설치는 별도로 검증한 SD 이미지로 합니다. USB Wi-Fi 전달을 지원하는 Carrot에 연결하면,
 콤마에 저장된 Wi-Fi 접속 정보를 USB로 받아 Jetson이 자동 연결합니다. 인터넷이나 모델 준비 전에 전달합니다.
+이번 검증 조합은 콤마 `carrot-jetlink`의 `526f81421c`와 Jetson 런타임 `f2b22dc`입니다.
+일반 `carrot-wip`의 임의 버전까지 지원한다는 뜻은 아닙니다.
+[v0.2.0-preview](https://github.com/ajouatom/carrot-jetson/releases/tag/v0.2.0-preview)에
+이미지 버전·해시·설치 안내와 검증 상태를 함께 제공합니다. 새 이미지의 실물 첫 부팅 검증은 별도이며,
+GitHub의 `manifest.json`은 NAS 런타임 업데이트 지정 파일입니다.
 콤마의 SSID·비밀번호 변경은 주기적으로 반영하며, 현재 연결된 Wi-Fi를 우선합니다.
 다른 콤마로 옮기면 이전 콤마에서 자동으로 받은 프로필을 교체합니다. 수동으로 만든 Jetson 프로필은 삭제하지 않습니다.
 일반 WPA/WPA2 PSK, WPA3 SAE 및 공개 Wi-Fi를 지원합니다. 기업용 인증과 웹 로그인이 필요한 Wi-Fi는 자동 설정 대상이 아닙니다.
