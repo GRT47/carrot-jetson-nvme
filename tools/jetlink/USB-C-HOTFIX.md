@@ -35,7 +35,10 @@ sudo python3 /usr/local/lib/carrot-jetlink/usbc_host.py --restore-dual-role
 `install_usbc.configure(mounted_root)` can also patch an offline mounted image
 without rebuilding its OS/model. New image builders call it automatically.
 The already-published v0.2.0 image does not run arbitrary files placed on
-CARROTSETUP. For an existing installation, use authenticated SSH to install the
+CARROTSETUP. A freshly flashed, never-booted card can instead receive the
+[PC offline bootstrap patch](OFFLINE-HOTFIX.md) before insertion into Jetson,
+without rebuilding the image or establishing SSH first.
+For an already-booted installation, use authenticated SSH to install the
 hotfix. If it has no management key, add your SSH **public** key to
 CARROTSETUP/setup.json and boot once; no image rewrite is needed. Management
 keys are owner-specific and are never included in the public image.

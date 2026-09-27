@@ -20,8 +20,10 @@ GitHub의 `manifest.json`은 NAS 런타임 업데이트 지정 파일입니다.
 일반 WPA/WPA2 PSK, WPA3 SAE 및 공개 Wi-Fi를 지원합니다. 기업용 인증과 웹 로그인이 필요한 Wi-Fi는 자동 설정 대상이 아닙니다.
 인터넷이 없더라도 설치된 호환 모델의 USB 추론·화면 전달은 가능합니다. 업데이트 다운로드에는 인터넷이 필요합니다.
 SSH 접속이 필요하면 개인 공개키만 `CARROTSETUP/setup.json`에 넣을 수 있습니다. Wi-Fi를 직접 지정하는 기존 방식도 유지합니다.
-v0.2.0 이미지의 최초 연결은 **Jetson USB-A 호스트 포트 → 콤마 USB-C**를 사용하세요.
-직접 C-to-C 연결은 아래 hotfix 설치 후 사용합니다. 관리키가 없으면 먼저 setup.json에
+v0.2.0 이미지는 SD 기록 직후 [PC 오프라인 핫픽스](tools/jetlink/OFFLINE-HOTFIX.md)를 적용하면
+첫 부팅 전에 C-to-C 준비를 넣을 수 있습니다. 전체 이미지 재생성이나 SSH 접속은 필요 없습니다.
+오프라인 패치를 하지 않았다면 최초 연결은 **Jetson USB-A 호스트 포트 → 콤마 USB-C**를 사용하세요.
+직접 C-to-C 연결은 오프라인 패치 또는 아래 hotfix 설치 후 사용합니다. SSH 설치 시 관리키가 없으면 먼저 setup.json에
 공개키를 등록해야 SSH로 hotfix를 설치할 수 있습니다.
 비밀번호는 일반 HUD·상태 로그에 포함하지 않고, USB 전용 메시지와 접근 권한 0600의 임시 파일·NetworkManager 프로필로 처리합니다.
 USB로 연결한 콤마를 Wi-Fi 설정 제공자로 신뢰하는 구조이며, 콤마의 인터넷을 USB로 공유하는 기능은 아닙니다.
