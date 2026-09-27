@@ -144,14 +144,14 @@ def test_real_ext4_data_only_replacement_passes_fsck(tmp_path):
   (tree/'boot.py').write_bytes(original)
   filesystem = tmp_path/'root.ext4'
   with filesystem.open('wb') as f: f.truncate(32 << 20)
-  subprocess.run(['mkfs.ext4', '-q', '-F', '-d', str(tree), str(filesystem)], check=True)
+  subprocess.run(['mkfs.ext4', '-q', '-F', '-b', '4096', '-d', str(tree), str(filesystem)], check=True)
   subprocess.run(['e2fsck', '-fn', str(filesystem)], check=True, capture_output=True)
   output = subprocess.check_output(['debugfs', '-R', 'blocks /boot.py', str(filesystem)], text=True)
   blocks = [int(value) for value in output.split()]
-  # mkfs chooses 1 KiB blocks for this small fixture.
+  # Pin the production block size; host mke2fs.conf defaults vary.
   assert blocks == list(range(blocks[0], blocks[0] + len(blocks)))
   base = b'G' * 2048 + filesystem.read_bytes()
-  offset = 2048 + blocks[0] * 1024
+  offset = 2048 + blocks[0] * 4096
   assert base[offset:offset+len(original)] == original
   padded = replacement + base[offset+len(original):offset + ((len(original)+511)//512*512)]
   disk = io.BytesIO(base)
