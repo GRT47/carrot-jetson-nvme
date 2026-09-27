@@ -1,0 +1,12 @@
+{
+  "repository": "https://github.com/ajouatom/openpilot",
+  "commit": "01285811d6aa56e3af28559ae88a8e23eb717d4b",
+  "scope": "Selected Jetson host runtime, shared renderer/schema dependencies and image/update tools",
+  "hardware": "Jetson Orin Nano Super developer kit",
+  "base_os": {
+    "l4t": "36.4.7",
+    "tensorrt": "10.3.0",
+    "architecture": "aarch64"
+  },
+  "notes": "NVIDIA OS, TensorRT binaries, model weights, personal configuration and release signing private key are not included."
+}

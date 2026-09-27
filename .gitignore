@@ -1,0 +1,14 @@
+dist/
+.analysis/
+__pycache__/
+.pytest_cache/
+*.pyc
+*.img
+*.img.zst
+*.onnx
+*.engine
+*.plan
+setup.json
+setup.private.json
+*-private.pem
+.venv/
