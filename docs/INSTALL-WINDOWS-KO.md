@@ -37,8 +37,11 @@ SD카드를 빼거나 이미지를 다시 기록할 필요가 없습니다.
 
 현재 이미지 조합은 **L4T 36.4.7 / TensorRT 10.3.0**이며, 포함된 Jetson 런타임은
 `f2b22dcf0bd0708658668f7efa2dfb29f81b3bd1`입니다. 콤마 측 USB Wi-Fi 전달은
-`ajouatom/openpilot`의 `carrot-jetlink` 코드 `526f81421c`에서 확인했습니다.
-일반 `carrot-wip`나 임의의 최신 버전이 이 기능을 모두 지원한다는 의미는 아닙니다.
+`ajouatom/openpilot`의 `carrot-jetlink` 코드 `526f81421c`에서 실물 정차 시험으로 확인했습니다.
+이 기능은 **2026-09-27 통합 이후 `carrot-wip`**에도 포함됩니다. 별도의 `carrot-jetlink` 브랜치를
+새로 설치할 필요는 없습니다. 통합 전의 구형 `carrot-wip`는 지원 대상이 아닙니다.
+[통합 기록과 검증 범위](https://github.com/ajouatom/openpilot/blob/carrot-wip/docs/jetson_wip_integration_20260927.md)를
+확인하세요. 이전 브랜치의 정차 시험과 통합본의 실물·주행 시험은 별개입니다.
 콤마 설정의 소프트웨어/버전 정보에서 브랜치를 확인하고, 지원 여부가 불분명하면
 설치 전에 배포자에게 확인하세요. 이 안내는 콤마의 OS·브랜치를 바꾸는 안내가 아닙니다.
 
