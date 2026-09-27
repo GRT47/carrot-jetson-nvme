@@ -1,5 +1,9 @@
 # PC에서 첫 부팅 전 USB-C 핫픽스 적용
 
+프로그램 설치나 디스크 번호 확인이 익숙하지 않다면
+[Windows 초보자 설치 안내](../../docs/INSTALL-WINDOWS-KO.md)를 먼저 보세요.
+실제 다운로드 링크, Etcher 기록 방법과 그대로 따라 할 명령이 있습니다.
+
 기존 이미지를 SD에 기록한 뒤, **Jetson에서 한 번도 부팅하기 전에** PC에서
 이 핫픽스를 적용할 수 있습니다. 전체 이미지 재생성·재기록, WSL, Jetson SSH,
 Wi-Fi 연결은 필요 없습니다. Windows 관리자 PowerShell과 Python 3.10 이상이 필요합니다.
