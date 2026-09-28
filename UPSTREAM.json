@@ -9,5 +9,5 @@
     "architecture": "aarch64"
   },
   "notes": "NVIDIA OS, TensorRT binaries, model weights, personal configuration and release signing private key are not included.",
-  "storage_candidate_source": "e338f7e7986dec6396521a323d94717425fdfefe"
+  "storage_candidate_source": "8d5b944e0643566e15b1a0868443298859a642fb"
 }
