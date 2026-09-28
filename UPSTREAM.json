@@ -10,5 +10,6 @@
   },
   "notes": "NVIDIA OS, TensorRT binaries, model weights, personal configuration and release signing private key are not included.",
   "storage_candidate_source": "8d5b944e0643566e15b1a0868443298859a642fb",
-  "installer_source": "fa3421ca6fafdb0791ca792f1ceed61d13c597e6"
+  "installer_source": "fa3421ca6fafdb0791ca792f1ceed61d13c597e6",
+  "diagnostics_candidate_source": "d4397132d657dd1755f1af724e8fcdd7421c33de"
 }
