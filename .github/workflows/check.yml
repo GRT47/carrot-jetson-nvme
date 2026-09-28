@@ -25,7 +25,7 @@ jobs:
       - run: >-
           python -m pytest --confcutdir=tools/jetlink
           tools/jetlink/test_hud_media.py tools/jetlink/test_update_host.py
-          tools/jetlink/test_boot_display.py tools/jetlink/test_readonly_boot.py
+          tools/jetlink/test_boot_display.py tools/jetlink/test_readonly_boot.py tools/jetlink/test_initrd_readonly.py
           tools/jetlink/test_host_health.py tools/jetlink/test_hud.py -q
           tools/jetlink/test_wifi.py tools/jetlink/test_refresh_sd_image.py tools/jetlink/test_protected_storage.py tools/jetlink/test_cache_persistence.py
           tools/jetlink/test_usbc_host.py tools/jetlink/test_offline_hotfix.py tools/jetlink/test_windows_installer.py
