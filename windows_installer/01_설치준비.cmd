@@ -1,16 +1,15 @@
 @echo off
-chcp 65001 >nul
+setlocal
 if not exist "%~dp0support\launcher.ps1" (
-  echo ë¨¼ì € ëª¨ë‘ ì••ì¶•ì„ í’€ì–´ ì£¼ì„¸ìš”.
-  echo Extract all files before running.
-  echo ì•„ë¬´ í‚¤ë‚˜ ëˆ„ë¥´ë©´ ë‹«ìŠµë‹ˆë‹¤.
-  echo Press any key to close.
-  pause >nul
+  echo Please extract all files before running.
+  echo ¸ÕÀú ¸ðµç ÆÄÀÏÀÇ ¾ÐÃàÀ» Ç¬ µÚ ½ÇÇàÇØ ÁÖ¼¼¿ä.
+  pause
   exit /b 1
 )
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0support\launcher.ps1" -Stage Prepare
 set "RESULT=%ERRORLEVEL%"
-echo ì•„ë¬´ í‚¤ë‚˜ ëˆ„ë¥´ë©´ ë‹«ìŠµë‹ˆë‹¤.
-echo Press any key to close.
-pause >nul
+if %RESULT% neq 0 (
+  echo.
+  pause
+)
 exit /b %RESULT%
