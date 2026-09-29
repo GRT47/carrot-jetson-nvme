@@ -56,7 +56,7 @@ try {
 
   Write-Host ''
   Write-Host ("선택한 드라이브: [{0}] {1} ({2:N1} GB)" -f $selected.Number, $selected.FriendlyName, ($selected.Size / 1e9)) -ForegroundColor Green
-  Write-InstallerPair '부팅 설정(extlinux.conf, fstab, protected.json)을 nvme0n1로 패치합니다.' 'Patching boot config for nvme0n1.'
+  Write-InstallerPair '고속 C# 엔진으로 부팅 설정(extlinux, fstab, protected.json)을 nvme0n1로 즉시 패치합니다.' 'Fast native patching boot config for nvme0n1.'
 
   if (-not ([System.Management.Automation.PSTypeName]'CarrotPatchNative').Type) {
     Add-Type -TypeDefinition @'
@@ -78,6 +78,18 @@ public static class CarrotPatchNative {
     uint count;
     if (!DeviceIoControl(handle, code, IntPtr.Zero, 0, IntPtr.Zero, 0, out count, IntPtr.Zero))
       throw new Win32Exception(Marshal.GetLastWin32Error());
+  }
+  public static int ReplaceBytes(byte[] buffer, int count, byte[] target, byte[] replacement) {
+    int replaced = 0;
+    for (int i = 0; i <= count - 7; i++) {
+      if (buffer[i] == target[0] && buffer[i+1] == target[1] && buffer[i+2] == target[2] &&
+          buffer[i+3] == target[3] && buffer[i+4] == target[4] && buffer[i+5] == target[5] && buffer[i+6] == target[6]) {
+        for (int j = 0; j < 7; j++) buffer[i+j] = replacement[j];
+        replaced++;
+        i += 6;
+      }
+    }
+    return replaced;
   }
 }
 '@
@@ -114,33 +126,16 @@ public static class CarrotPatchNative {
     $totalScanned = [long]0
     $patchCount = 0
 
-    Write-Host '패치 위치 검색 및 적용 중...' -ForegroundColor Yellow
+    Write-Host '패치 위치 검색 및 적용 중 (약 3~5초 소요)...' -ForegroundColor Yellow
     while ($totalScanned -lt $scanLength) {
       $currentPos = $startOffset + $totalScanned
       $toRead = [int][Math]::Min([long]$chunkSize, $scanLength - $totalScanned)
       $readCount = $device.Read($buffer, 0, $toRead)
       if ($readCount -le 0) { break }
 
-      $modified = $false
-      for ($i = 0; $i -le $readCount - 7; $i++) {
-        $match = $true
-        for ($j = 0; $j -lt 7; $j++) {
-          if ($buffer[$i + $j] -ne $targetBytes[$j]) {
-            $match = $false
-            break
-          }
-        }
-        if ($match) {
-          for ($j = 0; $j -lt 7; $j++) {
-            $buffer[$i + $j] = $replaceBytes[$j]
-          }
-          $patchCount++
-          $modified = $true
-          $i += 6
-        }
-      }
-
-      if ($modified) {
+      $modifiedCount = [CarrotPatchNative]::ReplaceBytes($buffer, $readCount, $targetBytes, $replaceBytes)
+      if ($modifiedCount -gt 0) {
+        $patchCount += $modifiedCount
         $null = $device.Seek($currentPos, [System.IO.SeekOrigin]::Begin)
         $device.Write($buffer, 0, $readCount)
         $device.Flush($true)
