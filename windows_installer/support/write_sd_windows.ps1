@@ -1,4 +1,4 @@
-﻿#Requires -RunAsAdministrator
+#Requires -RunAsAdministrator
 param(
   [Parameter(Mandatory=$true)][string]$Image,
   [Parameter(Mandatory=$true)][ValidatePattern('^[0-9a-fA-F]{64}$')][string]$Sha256,
@@ -20,7 +20,10 @@ try {
   $imageFile = Get-Item -LiteralPath $imagePath
   if ($imageFile.Length -lt 1GB -or $imageFile.Length % 512 -ne 0) { throw 'Invalid image size' }
   Write-Output "설치 이미지 검사 중`n  Checking installation image..."
-  if ((Get-FileHash -LiteralPath $imagePath -Algorithm SHA256).Hash -ne $Sha256) { throw 'Image checksum mismatch' }
+  $actualImageSha = (Get-FileHash -LiteralPath $imagePath -Algorithm SHA256).Hash
+  if ($actualImageSha.Trim().ToUpperInvariant() -ne $Sha256.Trim().ToUpperInvariant()) {
+    throw "Image checksum mismatch`n  Expected: $Sha256`n  Actual:   $actualImageSha"
+  }
   $setupBytes = $null
   if ($SetupJson) {
     $setupBytes = [System.IO.File]::ReadAllBytes((Resolve-Path -LiteralPath $SetupJson).Path)
@@ -70,7 +73,7 @@ public static class CarrotSdNative {
   }
   # Recheck identity immediately before the first destructive write.
   $disk = Get-Disk -Number $DiskNumber
-  if ($disk.IsBoot -or $disk.IsSystem -or $disk.IsReadOnly -or $disk.BusType -ne 'USB' -or
+  if ($disk.IsBoot -or $disk.IsSystem -or $disk.IsReadOnly -or ($disk.BusType -ne 'USB' -and $disk.BusType -ne 'NVMe') -or
       $disk.Size -ne $DiskBytes -or ([string]$disk.SerialNumber).Trim() -ne $SerialNumber.Trim() -or
       ($UniqueId -and $disk.UniqueId -ne $UniqueId)) {
     throw 'Disk identity changed before write'

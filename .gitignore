@@ -12,3 +12,4 @@ setup.json
 setup.private.json
 *-private.pem
 .venv/
+windows_installer/logs/
