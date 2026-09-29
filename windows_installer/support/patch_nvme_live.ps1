@@ -1,4 +1,4 @@
-#Requires -RunAsAdministrator
+﻿#Requires -RunAsAdministrator
 param()
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
@@ -93,8 +93,8 @@ public static class CarrotPatchNative {
           try {
             $h = [CarrotPatchNative]::Open($path.TrimEnd('\'))
             $locks.Add($h)
-            [CarrotPatchNative]::Control($h, 0x00090018) # FSCTL_LOCK_VOLUME
-            [CarrotPatchNative]::Control($h, 0x00090020) # FSCTL_DISMOUNT_VOLUME
+            [CarrotPatchNative]::Control($h, 0x00090018)
+            [CarrotPatchNative]::Control($h, 0x00090020)
           } catch {}
         }
       }
@@ -103,9 +103,9 @@ public static class CarrotPatchNative {
     $handle = [CarrotPatchNative]::Open("\\.\PhysicalDrive$number")
     $device = [System.IO.FileStream]::new($handle, [System.IO.FileAccess]::ReadWrite, 16MB, $false)
 
-    $startOffset = [long]1632632832 # Partition 1 start (1.52 GiB)
-    $scanLength = [long]3500000000   # Scan ~3.5 GiB covering all boot & system configs
-    $chunkSize = 16 * 1024 * 1024   # 16 MB chunks
+    $startOffset = [long]1632632832
+    $scanLength = [long](3500 * 1024 * 1024)
+    $chunkSize = 16 * 1024 * 1024
     $buffer = New-Object byte[] ($chunkSize)
     $targetBytes = [System.Text.Encoding]::ASCII.GetBytes('mmcblk0')
     $replaceBytes = [System.Text.Encoding]::ASCII.GetBytes('nvme0n1')
@@ -149,7 +149,7 @@ public static class CarrotPatchNative {
 
       $totalScanned += $readCount
       $percent = [Math]::Min(100, [int]($totalScanned * 100 / $scanLength))
-      Write-Progress -Activity 'NVMe 부팅 패치 적용 중' -Status ("{0}% 완료 (수정된 항목: {1}개)" -f $percent, $patchCount) -PercentComplete $percent
+      Write-Progress -Activity 'NVMe 부팅 패치 적용 중' -Status ("[{0}%] 수정된 항목: {1}개" -f $percent, $patchCount) -PercentComplete $percent
     }
 
     Write-Progress -Activity 'NVMe 부팅 패치 적용 중' -Completed
