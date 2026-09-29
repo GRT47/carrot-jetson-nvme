@@ -29,12 +29,12 @@ try {
   }
   $disk = Get-Disk -Number $DiskNumber
   if ([string]::IsNullOrWhiteSpace($SerialNumber) -and [string]::IsNullOrWhiteSpace($UniqueId)) { throw 'A stable disk identity is required' }
-  if ($disk.IsBoot -or $disk.IsSystem -or $disk.IsReadOnly -or $disk.BusType -ne 'USB' -or
+  if ($disk.IsBoot -or $disk.IsSystem -or $disk.IsReadOnly -or ($disk.BusType -ne 'USB' -and $disk.BusType -ne 'NVMe') -or
       ([string]$disk.SerialNumber).Trim() -ne $SerialNumber.Trim() -or ($UniqueId -and $disk.UniqueId -ne $UniqueId) -or
       $disk.Size -ne $DiskBytes -or $imageFile.Length -gt $disk.Size) {
     throw 'Disk identity, capacity or system-disk guard failed'
   }
-  Write-Output "USB 대상 확인`n  Verified USB target: disk $DiskNumber serial $SerialNumber size $DiskBytes"
+  Write-Output "대상 디스크 확인`n  Verified target disk: disk $DiskNumber serial $SerialNumber size $DiskBytes ($($disk.BusType))"
   Add-Type -TypeDefinition @'
 using System;
 using System.ComponentModel;

@@ -2,11 +2,16 @@
 . "$PSScriptRoot\disks.ps1"
 $good = [pscustomobject]@{ Number=7; Size=128000000000; BusType='USB'; IsBoot=$false; IsSystem=$false; IsReadOnly=$false; IsOffline=$false; UniqueId='card-1'; SerialNumber='' }
 if (-not (Test-InstallDisk $good 25769803776 0)) { throw 'Eligible USB card rejected' }
-foreach ($case in @(@('IsBoot',$true),@('IsSystem',$true),@('IsReadOnly',$true),@('IsOffline',$true),@('BusType','NVMe'),@('Size',1024),@('UniqueId',''))) {
+$goodNvme = [pscustomobject]@{ Number=8; Size=128000000000; BusType='NVMe'; IsBoot=$false; IsSystem=$false; IsReadOnly=$false; IsOffline=$false; UniqueId='nvme-1'; SerialNumber='' }
+if (-not (Test-InstallDisk $goodNvme 25769803776 0)) { throw 'Eligible NVMe drive rejected' }
+foreach ($case in @(@('IsBoot',$true),@('IsSystem',$true),@('IsReadOnly',$true),@('IsOffline',$true),@('BusType','SATA'),@('Size',1024),@('UniqueId',''))) {
   $disk = $good.PSObject.Copy()
   $disk.($case[0]) = $case[1]
   if (Test-InstallDisk $disk 25769803776 0) { throw "Unsafe disk accepted: $($case[0])" }
 }
+$badNvme = $goodNvme.PSObject.Copy()
+$badNvme.IsBoot = $true
+if (Test-InstallDisk $badNvme 25769803776 0) { throw 'Unsafe boot NVMe accepted' }
 if (Test-InstallDisk $good 25769803776 7) { throw 'Installer source disk accepted' }
 Assert-SameDisk $good $good 25769803776 0
 foreach ($case in @(@('Number',8),@('Size',64000000000),@('UniqueId','card-2'),@('SerialNumber','changed'),@('BusType','SATA'))) {

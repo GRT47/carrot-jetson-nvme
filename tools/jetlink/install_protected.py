@@ -10,7 +10,7 @@ import shutil
 from finalize_sd_image import write
 
 
-def configure(root, source):
+def configure(root, source, target_dev=None):
   root, source = Path(root).resolve(), Path(source).resolve()
   if root == Path('/') or not (root / 'etc/carrot-jetlink-image.json').is_file():
     raise ValueError('Only an offline Carrot image is supported')
@@ -28,21 +28,35 @@ def configure(root, source):
   for name in ('protected_storage.py', 'persistent_state.py', 'wifi_apply.py', 'wifi_protocol.py', 'image_first_boot.py', 'protected_first_boot.py', 'boot_status.py'):
     shutil.copyfile(source / name, destination / name)
     (destination / name).chmod(0o644)
-  write(root, '/etc/carrot-jetlink-protected.json', json.dumps(
-    dict(format=1, root='/dev/mmcblk0p1', data='/dev/mmcblk0p17', setup='/dev/mmcblk0p16')) + '\n')
-  write(root, '/etc/fstab', '/dev/root / ext4 ro,noload 0 0\n/dev/mmcblk0p10 /boot/efi vfat ro,nofail 0 0\n')
   extlinux = root / 'boot/extlinux/extlinux.conf'
   lines = extlinux.read_text().splitlines()
   found = False
+  detected_dev = 'mmcblk0'
   for index, line in enumerate(lines):
     if re.match(r'\s*APPEND\s', line):
-      if 'root=/dev/mmcblk0p1' not in line:
+      m = re.search(r'root=/dev/(mmcblk0|nvme0n1)p1', line)
+      if m:
+        detected_dev = m.group(1)
+      elif 'root=/dev/' in line:
         raise ValueError('Unexpected boot root')
+      if target_dev:
+        line = re.sub(r'root=/dev/(mmcblk0|nvme0n1)p1', f'root=/dev/{target_dev}p1', line)
+        detected_dev = target_dev
       lines[index] = re.sub(r'\s+rw(?=\s|$)', '', line) + ' ro'
       found = True
   if not found:
     raise ValueError('Missing SD boot command line')
   write(root, '/boot/extlinux/extlinux.conf', '\n'.join(lines) + '\n')
+
+  dev = target_dev or detected_dev
+  root_node = f'/dev/{dev}p1'
+  data_node = f'/dev/{dev}p17'
+  setup_node = f'/dev/{dev}p16'
+  efi_node = f'/dev/{dev}p10'
+
+  write(root, '/etc/carrot-jetlink-protected.json', json.dumps(
+    dict(format=1, root=root_node, data=data_node, setup=setup_node)) + '\n')
+  write(root, '/etc/fstab', f'/dev/root / ext4 ro,noload 0 0\n{efi_node} /boot/efi vfat ro,nofail 0 0\n')
   command = '/usr/bin/python3 /usr/lib/carrot-jetlink-storage/protected_storage.py'
   write(root, '/etc/systemd/system/carrot-protected-storage.service', f'''[Unit]
 Description=Read-only system, volatile writes and independent DATA recovery
@@ -91,3 +105,19 @@ WantedBy=local-fs-pre.target
         '[Service]\nExecStart=\nExecStart=/usr/bin/python3 /usr/lib/carrot-jetlink-storage/wifi_apply.py\n')
   write(root, '/etc/NetworkManager/conf.d/carrot-retry.conf',
         '[connection]\nconnection.autoconnect-retries=0\n')
+
+
+def main():
+  import argparse
+  parser = argparse.ArgumentParser(description=__doc__)
+  parser.add_argument('--root', type=Path, required=True, help='Mounted offline root directory')
+  parser.add_argument('--source', type=Path, default=Path(__file__).parent, help='Source directory of jetlink tools')
+  parser.add_argument('--target-device', choices=('mmcblk0', 'nvme0n1'), default=None,
+                      help='Target device layout (default: auto-detect from extlinux.conf)')
+  args = parser.parse_args()
+  configure(args.root, args.source, target_dev=args.target_device)
+  print(f'Successfully configured protected storage layout for {args.target_device or "auto-detected device"}')
+
+
+if __name__ == '__main__':
+  main()

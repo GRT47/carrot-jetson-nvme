@@ -15,13 +15,13 @@ def patch_init(body):
     raise ValueError('Unreviewed NVIDIA initrd init; refusing to guess boot changes')
   replacements = {
     '\noverlayfs_check\n': '\n' + MARKER + '\noverlayfs_enabled=0\n',
-    '\ncd /usr/sbin;': '\nif [ "${rootdev}" != "mmcblk0p1" ]; then\n'
+    '\ncd /usr/sbin;': '\nif [ "${rootdev}" != "mmcblk0p1" ] && [ "${rootdev}" != "nvme0n1p1" ]; then\n'
       '\techo "CARROT: unsupported protected root" > /dev/kmsg\n\texec /bin/bash\nfi\n\ncd /usr/sbin;',
     '\t\t\tmount -r "${dev}" "${mnt}"': '\t\t\tmount -t ext4 -o ro,noload "${dev}" "${mnt}"',
     '\t\t_mount_root "${dev}" "/mnt" "${retry}" 0': '\t\t_mount_root "${dev}" "/mnt" "${retry}" 1',
     'cp /etc/resolv.conf etc/resolv.conf':
       '# NetworkManager supplies DNS after the RAM etc overlay is mounted.\n'
-      'if ! chroot . /sbin/blockdev --setro /dev/mmcblk0p1; then\n'
+      'if ! chroot . /sbin/blockdev --setro "/dev/${rootdev}"; then\n'
       '\techo "CARROT: root block protection failed" > /dev/kmsg\n\texec /bin/bash\nfi\n'
       'echo "CARROT: APP first mount ro,noload; block read-only before PID1" > /dev/kmsg',
   }

@@ -44,6 +44,8 @@ def main():
   parser.add_argument('--base-sha256', required=True)
   parser.add_argument('--bundle-sha256', required=True)
   parser.add_argument('--consume-staging-base', action='store_true')
+  parser.add_argument('--target-device', choices=('mmcblk0', 'nvme0n1'), default=None,
+                      help='Target device layout (default: auto-detect from base extlinux.conf)')
   args = parser.parse_args()
   if os.name != 'posix' or os.geteuid() != 0:
     raise RuntimeError('Root on a Linux build host required')
@@ -95,7 +97,7 @@ def main():
     audit_unprovisioned(root, setup)
     marker = refresh(root, setup, args.bundle)
     source = root / 'opt/carrot-jetlink/current/tools/jetlink'
-    configure(root, source)
+    configure(root, source, target_dev=args.target_device)
     runtime = root / 'opt/carrot-jetlink'
     # A factory recovery runtime is intentionally retained on immutable APP.
     # The updateable copy lives wholly on DATA, including transaction records.

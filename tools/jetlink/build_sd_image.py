@@ -47,19 +47,25 @@ def main():
   p = argparse.ArgumentParser(description=__doc__)
   p.add_argument('--work-dir', type=Path, required=True)
   p.add_argument('--gib', type=int, default=24)
+  p.add_argument('--device', type=str, default=None, help='Block device (/dev/mmcblk0 or /dev/nvme0n1)')
   args = p.parse_args()
   assert os.geteuid() == 0 and Path('/etc/nv_tegra_release').is_file()
   work = args.work_dir.resolve()
   assert work == Path('/home/yun/jetlink-image-build')
   assert not work.exists(), 'Use a new staging directory; never overwrite an existing image'
   assert 24 <= args.gib <= 48
-  source = '/dev/mmcblk0'
+  root_source = subprocess.check_output(['findmnt', '-n', '-o', 'SOURCE', '/'], text=True).strip()
+  if args.device:
+    source = args.device
+  elif 'nvme' in root_source:
+    source = '/dev/nvme0n1'
+  else:
+    source = '/dev/mmcblk0'
   layout = json.loads(subprocess.check_output(['sfdisk', '--json', source]))['partitiontable']
   assert layout['label'] == 'gpt' and layout['sectorsize'] == 512
   parts = {int(part['node'].rsplit('p', 1)[1]): part for part in layout['partitions']}
   assert set(parts) == set(range(1, 16)) and parts[1]['name'] == 'APP'
-  root_source = subprocess.check_output(['findmnt', '-n', '-o', 'SOURCE', '/'], text=True).strip()
-  assert root_source == '/dev/mmcblk0p1'
+  assert root_source in (f'{source}p1', '/dev/root')
   locks = []
   for name in ['/var/lib/dpkg/lock-frontend', '/var/lib/dpkg/lock']:
     handle = open(name, 'a')

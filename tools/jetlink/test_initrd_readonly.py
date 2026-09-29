@@ -33,9 +33,9 @@ def test_first_mount_has_no_journal_writes_and_pid1_sees_block_readonly(monkeypa
   assert 'mount -t ext4 -o ro,noload' in result
   assert '_mount_root "${dev}" "/mnt" "${retry}" 1' in result
   assert 'overlayfs_enabled=0' in result and '\noverlayfs_check\n' not in result
-  assert result.index('--setro /dev/mmcblk0p1') < result.index('exec chroot . /sbin/init')
+  assert result.index('--setro "/dev/${rootdev}"') < result.index('exec chroot . /sbin/init')
   assert 'cp /etc/resolv.conf' not in result
-  assert '"${rootdev}" != "mmcblk0p1"' in result
+  assert '"${rootdev}" != "mmcblk0p1"' in result and '"${rootdev}" != "nvme0n1p1"' in result
   with pytest.raises(ValueError, match='already patched'):
     initrd.patch_init(result.encode())
 

@@ -79,7 +79,16 @@ def main():
     return
   SETUP.mkdir(parents=True, exist_ok=True)
   # The image partition number is fixed; never select an unrelated labelled USB disk.
-  subprocess.run(['mount', '-o', 'rw,nosuid,nodev,noexec,umask=077', '/dev/mmcblk0p16', str(SETUP)], check=True)
+  setup_node = '/dev/mmcblk0p16'
+  if protected:
+    try:
+      pcfg = json.loads(Path('/etc/carrot-jetlink-protected.json').read_text())
+      setup_node = pcfg.get('setup', setup_node)
+    except Exception:
+      pass
+  elif Path('/dev/nvme0n1p16').exists() and not Path('/dev/mmcblk0p16').exists():
+    setup_node = '/dev/nvme0n1p16'
+  subprocess.run(['mount', '-o', 'rw,nosuid,nodev,noexec,umask=077', setup_node, str(SETUP)], check=True)
   try:
     config_file = SETUP/'setup.json'
     if protected and (STATE/'provisioned.json').exists() and not config_file.exists():

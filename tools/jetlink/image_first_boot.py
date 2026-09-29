@@ -72,7 +72,8 @@ def main():
     return
   SETUP.mkdir(parents=True, exist_ok=True)
   # The image partition number is fixed; never select an unrelated labelled USB disk.
-  subprocess.run(['mount', '-o', 'rw,nosuid,nodev,noexec,umask=077', '/dev/mmcblk0p16', str(SETUP)], check=True)
+  setup_node = '/dev/nvme0n1p16' if Path('/dev/nvme0n1p16').exists() and not Path('/dev/mmcblk0p16').exists() else '/dev/mmcblk0p16'
+  subprocess.run(['mount', '-o', 'rw,nosuid,nodev,noexec,umask=077', setup_node, str(SETUP)], check=True)
   try:
     config_file = SETUP/'setup.json'
     config = validate_config(json.loads(config_file.read_text())) if config_file.exists() else {}

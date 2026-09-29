@@ -134,8 +134,8 @@ def provision(root, setup, bundle, stage):
   write(root, '/etc/sudoers.d/carrot-admin', 'jetlink ALL=(ALL:ALL) NOPASSWD: ALL\n', 0o440)
   write(root, '/etc/hostname', 'carrot-jetson\n')
   write(root, '/etc/hosts', '127.0.0.1 localhost\n127.0.1.1 carrot-jetson\n::1 localhost\n')
-  write(root, '/etc/machine-id', '')
-  write(root, '/etc/fstab', '/dev/root / ext4 defaults 0 1\n/dev/mmcblk0p10 /boot/efi vfat defaults 0 1\n')
+  efi_dev = '/dev/nvme0n1p10' if (root / 'boot/extlinux/extlinux.conf').exists() and 'nvme0n1' in (root / 'boot/extlinux/extlinux.conf').read_text() else '/dev/mmcblk0p10'
+  write(root, '/etc/fstab', f'/dev/root / ext4 defaults 0 1\n{efi_dev} /boot/efi vfat defaults 0 1\n')
   delay = Path('/etc/systemd/system/systemd-update-utmp.service.d/zz-carrot-no-timestamp-delay.conf')
   if delay.exists():
     if delay.read_text() != '[Service]\nExecStartPre=\n':

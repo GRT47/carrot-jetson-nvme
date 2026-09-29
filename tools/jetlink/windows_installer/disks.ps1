@@ -3,7 +3,7 @@
 }
 
 function Test-InstallDisk($Disk, [long]$ImageBytes, [int]$SourceDisk) {
-  return ($null -ne $Disk -and $Disk.BusType -eq 'USB' -and -not $Disk.IsBoot -and
+  return ($null -ne $Disk -and ($Disk.BusType -eq 'USB' -or $Disk.BusType -eq 'NVMe') -and -not $Disk.IsBoot -and
     -not $Disk.IsSystem -and -not $Disk.IsReadOnly -and -not $Disk.IsOffline -and
     $Disk.Size -ge $ImageBytes -and $Disk.Number -ne $SourceDisk -and
     -not [string]::IsNullOrWhiteSpace([string]$Disk.UniqueId))

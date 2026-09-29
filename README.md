@@ -97,6 +97,14 @@ Jetson 프로그램은 이 저장소에서, 콤마 기능은 `carrot-wip`에서 
 
 > Jetson software is maintained here; comma integration is maintained in `carrot-wip`.
 
-[소스 기준](UPSTREAM.json) · [라이선스](LICENSE)
+---
 
-*Source baseline · License*
+### 🚀 NVMe SSD (`/dev/nvme0n1`) 지원 안내
+본 포크 저장소(`GRT47/carrot-jetson-nvme`)는 MicroSD 카드뿐만 아니라 **NVMe M.2 SSD (`/dev/nvme0n1`)** 환경에서도 부팅 및 읽기 전용 스토리지 보호(Power-Loss Protection)가 정상 동작하도록 리패키징된 버전입니다.
+자세한 설정 방법은 [NVMe 설정 가이드](docs/NVME-SETUP-KO.md)를 참고하세요.
+
+---
+
+[소스 기준](UPSTREAM.json) · [라이선스](LICENSE) · [NVMe 가이드](docs/NVME-SETUP-KO.md)
+
+*Source baseline · License · NVMe Guide*

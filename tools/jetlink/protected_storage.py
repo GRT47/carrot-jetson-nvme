@@ -36,8 +36,12 @@ def locked():
 
 def configuration():
   value = json.loads(MARKER.read_text())
-  if value != {'format': 1, 'root': '/dev/mmcblk0p1', 'data': '/dev/mmcblk0p17', 'setup': '/dev/mmcblk0p16'}:
-    raise ValueError('Unsupported protected SD layout')
+  valid_layouts = (
+    {'format': 1, 'root': '/dev/mmcblk0p1', 'data': '/dev/mmcblk0p17', 'setup': '/dev/mmcblk0p16'},
+    {'format': 1, 'root': '/dev/nvme0n1p1', 'data': '/dev/nvme0n1p17', 'setup': '/dev/nvme0n1p16'},
+  )
+  if value not in valid_layouts:
+    raise ValueError('Unsupported protected storage layout')
   return value
 
 
