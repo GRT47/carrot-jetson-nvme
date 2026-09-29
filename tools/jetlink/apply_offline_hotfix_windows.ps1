@@ -1,4 +1,4 @@
-#Requires -RunAsAdministrator
+﻿#Requires -RunAsAdministrator
 param(
   [Parameter(Mandatory=$true)][int]$DiskNumber,
   [Parameter(Mandatory=$true)][string]$SerialNumber,

@@ -1,0 +1,14 @@
+{
+  "version": "v0.4.0-nvme-preview",
+  "preparation": "integrated",
+  "image_bytes": 42949672960,
+  "image_sha256": "423cf57a837d7a6d5dfec60bc28fd7721613b0e4bf8c3428d57b6661a893ce52",
+  "prepared_sha256": "423cf57a837d7a6d5dfec60bc28fd7721613b0e4bf8c3428d57b6661a893ce52",
+  "compressed_bytes": 10098321699,
+  "compressed_sha256": "61fce013d1fb9db548084ca4d2e9a3ea9d697717b1470725f0fec39830fc3285",
+  "storage_format": 1,
+  "support_nvme": true,
+  "python_url": "https://www.python.org/ftp/python/3.14.7/python-3.14.7-embed-amd64.zip",
+  "python_sha256": "d297e5ff019966817ad8502465176139f2d3d840fa4ed84b13bed399a6ab1f15",
+  "validation": "NVMe (nvme0n1) and SD (mmcblk0) dual storage support package"
+}

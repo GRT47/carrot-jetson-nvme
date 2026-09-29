@@ -1,0 +1,3 @@
+https://github.com/GRT47/carrot-jetson-nvme
+https://github.com/ajouatom/carrot-jetson
+https://www.python.org/downloads/release/python-3147/
